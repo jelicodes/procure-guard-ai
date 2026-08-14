@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "procure-guard-backend"
+version = "0.1.0"
+description = "Procure Guard AI backend: otomatisasi low-stock crisis dan PO governance"
+requires-python = ">=3.11"
+dependencies = [
+    "langgraph>=0.6",
+    "langchain-core>=1.0",
+    "langchain-groq",
+    "langchain-google-genai",
+    "langchain-mcp-adapters>=0.2",
+    "langchain-postgres",
+    "fastmcp>=2",
+    "fastapi",
+    "uvicorn[standard]",
+    "sqlalchemy>=2",
+    "pydantic>=2",
+    "pydantic-settings",
+    "python-dotenv",
+    "apscheduler>=3.10",
+    "pypdf",
+    "pytest",
+    "pytest-asyncio",
+    "httpx",
+]
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
