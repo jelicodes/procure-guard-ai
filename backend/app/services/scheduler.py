@@ -19,15 +19,15 @@ def start_scheduler(interval_minutes: int = 60, runnable=None, deps=None) -> Bac
     _scheduler = BackgroundScheduler(timezone="Asia/Jakarta")
 
     if runnable is None:
-        from app.agents.deps import build_default_deps
-        from app.rag.retriever import VendorRetriever
-        from app.core.llm import get_embeddings
-        from app.rag.store import build_vector_store
+        if deps is None:
+            from app.agents.deps import build_default_deps
+            from app.rag.retriever import VendorRetriever
+            from app.core.llm import get_embeddings
+            from app.rag.store import build_vector_store
 
-        store = build_vector_store(get_embeddings())
-        retriever = VendorRetriever(store)
-        built_deps = asyncio.run(build_default_deps(retriever))
-        deps = deps or built_deps
+            store = build_vector_store(get_embeddings())
+            retriever = VendorRetriever(store)
+            deps = asyncio.run(build_default_deps(retriever))
 
         async def _job():
             from app.agents.graph import run_scan
