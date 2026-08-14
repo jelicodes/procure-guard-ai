@@ -27,7 +27,7 @@ def test_reorder_rounds_up_to_discount_tier_within_headroom():
         discount_tiers=[DiscountTier(min_qty=500, discount_pct=5.0)],
     )
     result = compute_reorder(make_item(), rules)
-    # base = ceil(7*20 - 50) = 90 -> tier 500 within 90*1.5=135? NO -> keep 90
+    # base = ceil(7*20 - 50) = 90 -> tier 500 di luar batas 90*1.5=135? TIDAK -> tetap 90
     assert result.reorder_qty == 90
 
 
@@ -37,7 +37,7 @@ def test_reorder_uses_tier_when_base_close():
         discount_tiers=[DiscountTier(min_qty=100, discount_pct=5.0)],
     )
     result = compute_reorder(make_item(), rules)
-    # base=90, tier 100 in [90, 135] -> 100
+    # base=90, tier 100 ada di [90, 135] -> 100
     assert result.reorder_qty == 100
 
 
