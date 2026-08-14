@@ -1,0 +1,1 @@
+"""Paket node pipeline: detector, vendor_rag, reorder_calc, po_builder, approver, erp_submit."""
