@@ -1,0 +1,42 @@
+[
+  {
+    "sku": "SKU-001",
+    "name": "Bearing 6204",
+    "vendor_id": "VENDOR-A",
+    "stock_level": 45,
+    "safety_stock": 100,
+    "unit_price": 12.5,
+    "reorder_point": 120,
+    "avg_daily_usage": 20.0
+  },
+  {
+    "sku": "SKU-002",
+    "name": "Piston Seal 30mm",
+    "vendor_id": "VENDOR-B",
+    "stock_level": 800,
+    "safety_stock": 300,
+    "unit_price": 4.75,
+    "reorder_point": 350,
+    "avg_daily_usage": 40.0
+  },
+  {
+    "sku": "SKU-003",
+    "name": "Servo Motor 750W",
+    "vendor_id": "VENDOR-A",
+    "stock_level": 12,
+    "safety_stock": 15,
+    "unit_price": 850.0,
+    "reorder_point": 18,
+    "avg_daily_usage": 1.5
+  },
+  {
+    "sku": "SKU-004",
+    "name": "Hydraulic Valve DN25",
+    "vendor_id": "VENDOR-B",
+    "stock_level": 5000,
+    "safety_stock": 4000,
+    "unit_price": 22.0,
+    "reorder_point": 4500,
+    "avg_daily_usage": 300.0
+  }
+]
