@@ -51,4 +51,9 @@ def get_po_status(po_no: str) -> dict:
 
 if __name__ == "__main__":
     transport = os.environ.get("MCP_TRANSPORT", "streamable-http")
-    mcp.run(transport=transport)
+    if transport == "stdio":
+        mcp.run(transport=transport)
+    else:
+        # Bind 0.0.0.0:8001 agar dapat dijangkau backend di dalam docker-compose
+        # (default FastMCP hanya 127.0.0.1:8000).
+        mcp.run(transport=transport, host="0.0.0.0", port=8001)

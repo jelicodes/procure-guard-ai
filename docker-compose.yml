@@ -33,6 +33,7 @@ services:
       DATABASE_URL: postgresql+psycopg://procure:procure@postgres:5432/procure
       ERP_MCP_URL: http://mcp-server:8001/mcp
       ERP_MCP_TRANSPORT: http
+      PROCURE_GUARD_APP: "1"
     depends_on:
       postgres:
         condition: service_healthy
