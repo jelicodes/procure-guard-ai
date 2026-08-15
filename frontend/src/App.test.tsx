@@ -59,4 +59,33 @@ describe("App", () => {
     await screen.findByTestId("message");
     expect(screen.getByTestId("message")).toHaveTextContent("Gagal terhubung ke backend");
   });
+
+  it("menampilkan pesan error saat scan gagal", async () => {
+    const user = userEvent.setup();
+    vi.mocked(api.scan).mockRejectedValue(new Error("HTTP 500"));
+
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: "Pindai Inventori" }));
+    expect(await screen.findByTestId("message")).toHaveTextContent("Scan gagal");
+  });
+
+  it("menampilkan pesan error saat persetujuan gagal", async () => {
+    const user = userEvent.setup();
+    vi.mocked(api.approvePo).mockRejectedValue(new Error("HTTP 500"));
+
+    render(<App />);
+    await screen.findByTestId("approval-card");
+    await user.click(screen.getByRole("button", { name: "Setujui" }));
+    expect(await screen.findByTestId("message")).toHaveTextContent("Persetujuan PO PO-123 gagal");
+  });
+
+  it("menampilkan pesan error saat penolakan gagal", async () => {
+    const user = userEvent.setup();
+    vi.mocked(api.rejectPo).mockRejectedValue(new Error("HTTP 500"));
+
+    render(<App />);
+    await screen.findByTestId("approval-card");
+    await user.click(screen.getByRole("button", { name: "Tolak" }));
+    expect(await screen.findByTestId("message")).toHaveTextContent("Penolakan PO PO-123 gagal");
+  });
 });

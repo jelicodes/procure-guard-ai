@@ -26,21 +26,33 @@ export default function App() {
   }, []);
 
   async function handleScan() {
-    await api.scan();
-    setMessage("Scan selesai.");
-    await refresh();
+    try {
+      await api.scan();
+      setMessage("Scan selesai.");
+      await refresh();
+    } catch {
+      setMessage("Scan gagal. Coba lagi nanti.");
+    }
   }
 
   async function handleApprove(poNo: string) {
-    await api.approvePo(poNo);
-    setMessage(`PO ${poNo} disetujui.`);
-    await refresh();
+    try {
+      await api.approvePo(poNo);
+      setMessage(`PO ${poNo} disetujui.`);
+      await refresh();
+    } catch {
+      setMessage(`Persetujuan PO ${poNo} gagal. Coba lagi nanti.`);
+    }
   }
 
   async function handleReject(poNo: string, note: string) {
-    await api.rejectPo(poNo, note);
-    setMessage(`PO ${poNo} ditolak.`);
-    await refresh();
+    try {
+      await api.rejectPo(poNo, note);
+      setMessage(`PO ${poNo} ditolak.`);
+      await refresh();
+    } catch {
+      setMessage(`Penolakan PO ${poNo} gagal. Coba lagi nanti.`);
+    }
   }
 
   return (
