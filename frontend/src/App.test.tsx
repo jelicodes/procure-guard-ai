@@ -50,4 +50,13 @@ describe("App", () => {
     await waitFor(() => expect(api.approvePo).toHaveBeenCalledWith("PO-123"));
     expect(screen.getByTestId("message")).toHaveTextContent("PO-123 disetujui");
   });
+
+  it("menampilkan pesan error saat backend tidak terjangkau", async () => {
+    vi.mocked(api.listPos).mockRejectedValue(new Error("HTTP 500"));
+    vi.mocked(api.listPending).mockRejectedValue(new Error("HTTP 500"));
+
+    render(<App />);
+    await screen.findByTestId("message");
+    expect(screen.getByTestId("message")).toHaveTextContent("Gagal terhubung ke backend");
+  });
 });

@@ -10,8 +10,13 @@ export default function App() {
   const [message, setMessage] = useState("");
 
   async function refresh() {
-    setPending(await api.listPending());
-    setPos(await api.listPos());
+    try {
+      const [pendingList, poList] = await Promise.all([api.listPending(), api.listPos()]);
+      setPending(pendingList);
+      setPos(poList);
+    } catch {
+      setMessage("Gagal terhubung ke backend. Coba lagi nanti.");
+    }
   }
 
   useEffect(() => {

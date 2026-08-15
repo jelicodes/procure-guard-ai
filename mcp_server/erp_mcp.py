@@ -2,8 +2,8 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
-from datetime import datetime
 
 from fastmcp import FastMCP
 
@@ -14,19 +14,24 @@ from mcp_server.mock_erp.operations import (
     list_inventory,
 )
 
+logger = logging.getLogger(__name__)
+
 mcp = FastMCP("erp")
 
 
 def _seed_inventory_dari_env() -> None:
     """Isi inventori mock dari env ERP_SEED_INVENTORY (JSON) atau ERP_SEED_FILE (path JSON)."""
-    raw = os.environ.get("ERP_SEED_INVENTORY")
-    if raw:
-        seed_inventory(json.loads(raw))
-        return
-    seed_file = os.environ.get("ERP_SEED_FILE")
-    if seed_file and os.path.isfile(seed_file):
-        with open(seed_file, encoding="utf-8") as fh:
-            seed_inventory(json.load(fh))
+    try:
+        raw = os.environ.get("ERP_SEED_INVENTORY")
+        if raw:
+            seed_inventory(json.loads(raw))
+            return
+        seed_file = os.environ.get("ERP_SEED_FILE")
+        if seed_file and os.path.isfile(seed_file):
+            with open(seed_file, encoding="utf-8") as fh:
+                seed_inventory(json.load(fh))
+    except (json.JSONDecodeError, OSError, TypeError, ValueError) as exc:
+        logger.warning("Seed inventori dari env gagal, dilanjutkan tanpa seed: %s", exc)
 
 
 _seed_inventory_dari_env()

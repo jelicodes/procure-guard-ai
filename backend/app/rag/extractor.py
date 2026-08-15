@@ -16,9 +16,9 @@ def build_rule_extractor(model=None):
     async def extract(vendor_id: str, sku: str, chunks: list[str]) -> VendorRules:
         prompt = (
             f"Ekstrak aturan pengadaan untuk vendor {vendor_id} (SKU {sku}) dari "
-            f"ekserp SOP berikut. Jika suatu field tidak ada, gunakan nilai default "
+            f"ekstrak SOP berikut. Jika suatu field tidak ada, gunakan nilai default "
             f"(moq=0, lead_time_days=7). Selalu set basis='rag'.\n\n"
-            f"Ekserp SOP:\n" + "\n---\n".join(chunks)
+            f"Ekstrak SOP:\n" + "\n---\n".join(chunks)
         )
         return await structured.ainvoke(prompt)
 

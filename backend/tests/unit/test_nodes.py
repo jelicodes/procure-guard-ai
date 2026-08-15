@@ -101,3 +101,26 @@ def test_approver_interrupts_and_resumes(monkeypatch):
     assert captured["payload"]["type"] == "approval_request"
     assert result["approval"].decision == "approved"
     assert result["po"].status == "approved"
+
+
+def test_approver_treats_invalid_resume_as_rejected(monkeypatch):
+    class FakeInterrupt:
+        def __call__(self, payload):
+            return {"decision": "maybe"}
+
+    node = make_approver()
+    state = {
+        "po": PurchaseOrder(po_no="PO-1", sku="SKU-001", vendor_id="VENDOR-A", qty=200, unit_price=12.5, total_value=2500.0),
+        "reorder": ReorderCalc(sku="SKU-001", reorder_qty=200, total_value=2500.0, explanation="x", basis="rag"),
+    }
+
+    async def run():
+        import app.agents.nodes.approver as mod
+
+        mod.interrupt = FakeInterrupt()
+        return await node(state)
+
+    result = asyncio.run(run())
+    assert result["approval"].decision == "rejected"
+    assert result["approval"].reviewer == "system"
+    assert result["po"].status == "rejected"
