@@ -2,6 +2,8 @@ import pytest
 
 from app.agents.deps import GraphDeps
 from app.agents.graph import build_graph, resume_approval, run_scan
+from app.core.db import SessionLocal
+from app.core.models import PurchaseOrderModel
 from app.mcp_client.erp import InventoryGateway
 from app.rag.retriever import VendorRetriever
 from app.schemas.inventory import InventoryItem
@@ -55,6 +57,12 @@ async def test_scan_auto_submits_below_threshold():
     assert out["po"] is not None
     assert out["po"].status == "submitted"
     assert out["result"].get("erp_po_no") == "ERP-1"
+
+    # erp_po_no harus ter-persist ke DB agar API /api/pos menampilkannya.
+    with SessionLocal() as session:
+        row = session.query(PurchaseOrderModel).filter_by(po_no=out["po"].po_no).first()
+        assert row is not None
+        assert row.erp_po_no == "ERP-1"
 
 
 @pytest.mark.asyncio

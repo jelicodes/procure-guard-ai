@@ -75,7 +75,7 @@ def _log_event(po_no: str, node: str, note: str = "") -> None:
             session.commit()
 
 
-def _save_po(thread_id: str, po, status: str, basis: str = "rag", explanation: str = "") -> None:
+def _save_po(thread_id: str, po, status: str, basis: str = "rag", explanation: str = "", erp_po_no: str | None = None) -> None:
     Base.metadata.create_all(engine)
     with SessionLocal() as session:
         row = session.query(PurchaseOrderModel).filter_by(po_no=po.po_no).first()
@@ -91,6 +91,8 @@ def _save_po(thread_id: str, po, status: str, basis: str = "rag", explanation: s
         row.basis = basis
         row.explanation = explanation
         row.thread_id = thread_id
+        if erp_po_no is not None:
+            row.erp_po_no = erp_po_no
         session.commit()
 
 
@@ -106,7 +108,7 @@ async def run_scan(deps: GraphDeps, thread_id: str | None = None) -> dict:
         interrupted = bool(result.get("__interrupt__"))
         status = "pending_approval" if interrupted else po.status
         po.status = status
-        _save_po(thread_id, po, status, basis=basis, explanation=explanation)
+        _save_po(thread_id, po, status, basis=basis, explanation=explanation, erp_po_no=result.get("erp_po_no"))
     return {"thread_id": thread_id, "result": result, "po": po}
 
 
@@ -118,5 +120,5 @@ async def resume_approval(deps: GraphDeps, thread_id: str, decision: ApprovalDec
         reorder = result.get("reorder")
         basis = reorder.basis if reorder else "rag"
         explanation = reorder.explanation if reorder else ""
-        _save_po(thread_id, po, po.status, basis=basis, explanation=explanation)
+        _save_po(thread_id, po, po.status, basis=basis, explanation=explanation, erp_po_no=result.get("erp_po_no"))
     return {"result": result, "po": po}
