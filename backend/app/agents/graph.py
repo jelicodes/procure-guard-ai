@@ -31,7 +31,14 @@ def build_graph(deps: GraphDeps):
     builder.add_node("erp_submit", make_erp_submit(deps.gateway, deps.log_event))
 
     builder.add_edge(START, "detector")
-    builder.add_edge("detector", "vendor_rag")
+
+    def after_detector(state: POGuardState) -> str:
+        # Tanpa stok kritis: hentikan scan — bukan error 500.
+        if state.get("error"):
+            return END
+        return "vendor_rag"
+
+    builder.add_conditional_edges("detector", after_detector, {"vendor_rag": "vendor_rag", END: END})
     builder.add_edge("vendor_rag", "reorder_calc")
     builder.add_edge("reorder_calc", "po_builder")
 

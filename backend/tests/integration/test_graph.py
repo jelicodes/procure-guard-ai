@@ -66,6 +66,19 @@ async def test_scan_auto_submits_below_threshold():
 
 
 @pytest.mark.asyncio
+async def test_scan_no_critical_stock_returns_without_error():
+    # Semua item sehat (bukan kritis) -> scan harus selesai tanpa error/500 dan po None.
+    deps = GraphDeps(
+        gateway=FakeGateway([make_item(stock_level=500, safety_stock=100)]),
+        retriever=FakeRetriever(),
+        extract=fake_extract,
+    )
+    out = await run_scan(deps)
+    assert out["po"] is None
+    assert out["result"].get("error") == "no_critical_stock"
+
+
+@pytest.mark.asyncio
 async def test_scan_interrupts_for_approval_then_resumes():
     deps = GraphDeps(
         gateway=FakeGateway([make_item(unit_price=100.0)]),  # total = 100*100 = 10000 >= ambang

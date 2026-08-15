@@ -1,4 +1,4 @@
-import app.core.models  # noqa: F401  models must be imported before Base.metadata registers tables
+import app.core.models  # noqa: F401  models harus diimpor sebelum Base.metadata mendaftarkan tabel
 
 from app.core.db import engine, Base, SessionLocal, get_session
 

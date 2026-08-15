@@ -9,9 +9,12 @@ from app.core.config import settings
 def get_checkpointer():
     if settings.database_url.startswith("postgres"):
         from langgraph.checkpoint.postgres import PostgresSaver
+        from psycopg_pool import ConnectionPool
 
-        from sqlalchemy import create_engine
-
-        engine = create_engine(settings.database_url)
-        return PostgresSaver(engine)  # type: ignore[arg-type]
+        # Normalisasi URL SQLAlchemy ("postgresql+psycopg://...") menjadi URL psycopg murni.
+        url = settings.database_url.replace("+psycopg", "", 1)
+        pool = ConnectionPool(url, open=False)
+        checkpointer = PostgresSaver(pool)
+        checkpointer.setup()  # buat tabel checkpoint sekali sebelum ainvoke pertama
+        return checkpointer
     return InMemorySaver()

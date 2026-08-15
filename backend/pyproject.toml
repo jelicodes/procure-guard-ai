@@ -9,6 +9,8 @@ description = "Procure Guard AI backend: otomatisasi low-stock crisis dan PO gov
 requires-python = ">=3.11"
 dependencies = [
     "langgraph>=0.6",
+    "langgraph-checkpoint-postgres",
+    "psycopg[binary]",
     "langchain-core>=1.0",
     "langchain-community",
     "langchain-text-splitters",
