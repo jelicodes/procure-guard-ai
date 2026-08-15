@@ -25,6 +25,11 @@ services:
     volumes:
       - ./backend/data/inventory_seed.json:/app/seed_inventory.json:ro
     command: ["python", "-m", "mcp_server.erp_mcp"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; socket.create_connection(('localhost', 8001), timeout=3).close()"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   backend:
     build: ./backend
@@ -41,7 +46,7 @@ services:
       postgres:
         condition: service_healthy
       mcp-server:
-        condition: service_started
+        condition: service_healthy
     command: ["uvicorn", "app.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
 
   frontend:

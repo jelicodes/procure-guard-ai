@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import ApprovalCard from "./components/ApprovalCard";
-import InventoryTable, { InventoryRow } from "./components/InventoryTable";
 import PoList from "./components/PoList";
 import * as api from "./api";
 import type { PurchaseOrder } from "./types";
