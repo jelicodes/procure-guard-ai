@@ -2,9 +2,16 @@ import json
 
 import pytest
 
-from app.mcp_client.erp import InventoryGateway
+from app.mcp_client.erp import InventoryGateway, _load_seed_inventory
 from app.schemas.inventory import InventoryItem
 from app.schemas.po import PurchaseOrder
+
+
+def test_load_seed_inventory_berisi_sku_valid():
+    seed = json.loads(_load_seed_inventory())
+    assert len(seed) == 4
+    assert any(item["sku"] == "SKU-001" for item in seed)
+    assert all("sku" in item and "stock_level" in item for item in seed)
 
 
 class FakeTool:

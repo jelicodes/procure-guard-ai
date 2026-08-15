@@ -21,6 +21,9 @@ services:
       - "8001:8001"
     environment:
       MCP_TRANSPORT: streamable-http
+      ERP_SEED_FILE: /app/seed_inventory.json
+    volumes:
+      - ./backend/data/inventory_seed.json:/app/seed_inventory.json:ro
     command: ["python", "-m", "mcp_server.erp_mcp"]
 
   backend:

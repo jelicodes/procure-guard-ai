@@ -24,9 +24,10 @@ def test_get_chat_model_mengembalikan_chatgroq(api_keys):
     assert hasattr(model, "with_structured_output")
 
 
-def test_get_chat_model_gagal_tanpa_api_key():
+def test_get_chat_model_gagal_tanpa_api_key(monkeypatch):
     from app.core.llm import get_chat_model
 
+    monkeypatch.setattr(config.settings, "groq_api_key", None)
     with pytest.raises(Exception):
         get_chat_model()
 

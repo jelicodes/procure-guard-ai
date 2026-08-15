@@ -18,10 +18,15 @@ mcp = FastMCP("erp")
 
 
 def _seed_inventory_dari_env() -> None:
-    """Isi inventori mock dari env ERP_SEED_INVENTORY (JSON) untuk proses anak stdio."""
+    """Isi inventori mock dari env ERP_SEED_INVENTORY (JSON) atau ERP_SEED_FILE (path JSON)."""
     raw = os.environ.get("ERP_SEED_INVENTORY")
     if raw:
         seed_inventory(json.loads(raw))
+        return
+    seed_file = os.environ.get("ERP_SEED_FILE")
+    if seed_file and os.path.isfile(seed_file):
+        with open(seed_file, encoding="utf-8") as fh:
+            seed_inventory(json.load(fh))
 
 
 _seed_inventory_dari_env()

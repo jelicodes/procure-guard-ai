@@ -15,6 +15,17 @@ from app.schemas.po import PurchaseOrder
 
 REPO_ROOT = str(Path(__file__).resolve().parents[3])
 
+SEED_FILE = Path(REPO_ROOT) / "backend" / "data" / "inventory_seed.json"
+
+
+def _load_seed_inventory() -> str:
+    """Baca seed inventori bawaan sebagai JSON string untuk proses anak stdio.
+
+    Proses anak ERP stdio berjalan dengan memori (modul mock_erp) yang terpisah,
+    sehingga inventori harus disuntikkan lewat env ERP_SEED_INVENTORY.
+    """
+    return SEED_FILE.read_text(encoding="utf-8")
+
 
 def _unwrap_content(result: Any) -> Any:
     """Ambil payload dari content blocks hasil panggilan tool MCP.
@@ -41,7 +52,10 @@ async def get_erp_tools() -> dict[str, BaseTool]:
                 "command": sys.executable,
                 "args": ["-m", "mcp_server.erp_mcp"],
                 "cwd": REPO_ROOT,
-                "env": {"MCP_TRANSPORT": "stdio"},
+                "env": {
+                    "MCP_TRANSPORT": "stdio",
+                    "ERP_SEED_INVENTORY": _load_seed_inventory(),
+                },
             }
         }
     else:
