@@ -19,6 +19,40 @@ Automates the critical procurement pipeline end-to-end, cutting purchase order c
 
 ---
 
+## The Problem
+
+Every hour a critical component sits below safety stock, the production line moves
+closer to a standstill. Yet the process that restores it — monitoring inventory,
+reading supplier contracts, computing a reorder, drafting a purchase order, waiting
+for a manager's signature, and keying the result into the ERP — still runs on
+spreadsheets, PDFs, and email. A single purchase order takes **24 to 72 hours** to
+travel that path, and every step is a place where a stock-out, a missed discount
+tier, or a mistyped quantity slips in.
+
+The slowness isn't one bottleneck; it's a chain of them:
+
+- **Stock is monitored by hand.** A shortage is often discovered only when the line
+  already has nothing to run.
+- **Supplier terms are buried in unstructured SOPs.** MOQ, lead time, and volume
+  discounts for a given SKU must be hunted down in contracts, by reading.
+- **Reorder math is done manually.** The quantity ordered is only as good as the
+  person who did the arithmetic.
+- **High-value POs stall at the human gate.** Manager approval is a control — and
+  also a bottleneck.
+- **Approved POs are re-keyed into the ERP.** Every manual transfer is where typos
+  are born.
+
+The real cost isn't the hours. It's what the hours buy: production downtime, higher
+prices from missed volume-discount tiers, and procurement decisions that cannot be
+traced or audited.
+
+Procure Guard AI re-imagines this pipeline as an agentic workflow — automating the
+monitoring, the rule extraction, and the reorder math, keeping a human decision-maker
+exactly where value and risk demand it, and submitting the result to the ERP over
+MCP. The goal: shrink the PO cycle from days to **under five minutes**.
+
+---
+
 ## Overview
 
 Procure Guard AI is a **human-in-the-loop agentic workflow** that supervises a
