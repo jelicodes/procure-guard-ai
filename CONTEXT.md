@@ -40,7 +40,7 @@ Monorepo modular dengan unit berbatas jelas:
 - `backend/` — FastAPI + LangGraph `StateGraph` (node: detector → vendor_rag →
   reorder_calc → po_builder → approver/erp_submit), RAG vendor SOP, scheduler APScheduler.
 - `mcp_server/` — FastMCP server membungkus mock Oracle ERP (in-memory + seed).
-- `frontend/` — React SPA (Vite, TypeScript) dashboard + approval via REST + polling.
+- `frontend/` — React SPA (Vite, TypeScript, Tailwind CSS 4) dashboard + approval via REST + polling.
 - `docker-compose.yml` — postgres(pgvector), mcp-server, backend, frontend.
 
 Keputusan inti (detail di ADR):

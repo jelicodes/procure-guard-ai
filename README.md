@@ -10,7 +10,7 @@ Automates the critical procurement pipeline end-to-end, cutting purchase order c
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
 ![LangGraph](https://img.shields.io/badge/LangGraph-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white)
 ![MCP](https://img.shields.io/badge/MCP-000000?style=for-the-badge&logo=modelcontextprotocol&logoColor=white)
-![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL%2Bpgvector-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
@@ -81,10 +81,10 @@ which cleanly decouples the orchestration logic from any specific ERP system.
 | **Automated low-stock detection** | Scheduled (APScheduler) + on-demand scans flag every item where `stock_level <= safety_stock`, ranked by severity. |
 | **Supplier-rule extraction (RAG)** | Vendor SOP/contract documents are embedded (Gemini), retrieved per SKU, and parsed into structured `VendorRules` (MOQ, lead time, discount tiers, penalties) via LLM structured output. |
 | **Deterministic reorder math** | `max(moq, ⌈lead_time × daily_usage − stock⌉)`, bumped to the nearest discount tier within headroom, fully unit-tested and explainable. |
-| **Human-in-the-loop governance** | POs at or above a configurable threshold (`$10,000` default) pause the LangGraph with `interrupt()`; a manager approves or rejects with a one-click dashboard action, and the graph resumes asynchronously. |
+| **Human-in-the-loop governance** | POs at or above a configurable threshold (`Rp 50.000.000` default) pause the LangGraph with `interrupt()`; a manager approves or rejects with a dashboard action (reviewer + mandatory note), and the graph resumes asynchronously. |
 | **ERP submission over MCP** | Draft POs are sent to a mock Oracle ERP through a FastMCP server (`get_inventory`, `create_po`, `get_po_status`). Swap the mock for a real ERP without touching the pipeline. |
 | **Full audit trail** | Every state transition of the graph is persisted (`po_events`), and each run is resumable via a persisted checkpointer (`thread_id`). |
-| **React dashboard** | Real-time view of pending approvals (with reasoning summary), the PO list, and one-click approve/reject — REST + polling. |
+| **React dashboard** | Inventory health monitor, live agent observability trail, and a governance panel for pending approvals (AI reasoning + SOP basis, approve/reject with reviewer and mandatory note) — REST + polling, all figures in Rupiah. |
 
 ---
 
@@ -156,7 +156,7 @@ for domain vocabulary and architectural decisions.
 | Checkpointer | **InMemorySaver** (dev) / **PostgresSaver** (prod) | Async approval resume |
 | Database | **SQLite** (dev) / **PostgreSQL 16 + pgvector** (prod) | |
 | Scheduler | **APScheduler** | Interval-based stock scans |
-| Frontend | **React 18 + Vite + TypeScript**, Vitest + Testing Library | REST + polling |
+| Frontend | **React 19 + Vite 6 + TypeScript + Tailwind CSS 4**, Vitest + Testing Library | REST + polling |
 | Deploy | **docker-compose** | 4 services: postgres, mcp-server, backend, frontend |
 
 ---
@@ -184,7 +184,7 @@ GOOGLE_API_KEY=your_google_api_key
 DATABASE_URL=sqlite:///./procure_guard.db
 ERP_MCP_URL=http://mcp-server:8001/mcp
 ERP_MCP_TRANSPORT=http
-APPROVAL_THRESHOLD=10000.0
+APPROVAL_THRESHOLD=50000000.0
 SCAN_INTERVAL_MINUTES=60
 ```
 
@@ -289,7 +289,7 @@ procure-guard-ai/
 │   ├── data/               # seed inventory + sample vendor SOPs
 │   └── tests/              # unit · integration · api
 ├── mcp_server/             # FastMCP server wrapping mock Oracle ERP
-├── frontend/               # React SPA (Vite, TypeScript)
+├── frontend/               # React SPA (Vite, TypeScript, Tailwind CSS 4)
 ├── docs/                   # spec, plan, research, ADRs
 ├── CONTEXT.md              # domain glossary & architecture
 └── docker-compose.yml      # postgres · mcp-server · backend · frontend

@@ -48,9 +48,9 @@ Postgres, sementara produksi memakai PostgreSQL + pgvector.
 
 ### 4. Governansi approval berbasis ambang nilai
 
-PO dengan `total_value >= APPROVAL_THRESHOLD` (default `10000.0`) wajib `interrupt()`;
-di bawah ambang auto-lanjut ke ERP. `APPROVAL_THRESHOLD=1000` di `backend/.env` adalah
-override dev-only supaya alur approval teruji di smoke test; produksi tetap `10000.0`.
+PO dengan `total_value >= APPROVAL_THRESHOLD` (default `50_000_000.0`, dalam Rupiah) wajib `interrupt()`;
+di bawah ambang auto-lanjut ke ERP. Produksi dan dev memakai default yang sama
+(contoh `backend/.env` memakai `50000000.0`); nilai dapat disesuaikan per environment.
 
 **Alasan:** kebutuhan bisnis — PO bernilai besar butuh persetujuan manajer; nilai kecil
 boleh otomatis untuk memangkas cycle time.
