@@ -9,9 +9,9 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.agents.deps import GraphDeps
-from app.agents.graph import resume_approval, run_scan
+from app.agents.graph import log_event, resume_approval, run_scan
 from app.core.db import get_session
-from app.core.models import PurchaseOrderModel
+from app.core.models import InventoryItemModel, POEventModel, PurchaseOrderModel
 from app.schemas.po import ApprovalDecision
 from app.services.seed import seed_database
 
@@ -34,8 +34,18 @@ class RejectBody(BaseModel):
     note: str = ""
 
 
+class ApproveBody(BaseModel):
+    reviewer: str = "manager"
+    note: str = ""
+
+
 def _get_deps(request: Request) -> GraphDeps:
     return request.app.state.deps
+
+
+def _ensure_deps_logging(deps: GraphDeps) -> None:
+    if deps.log_event is None:
+        deps.log_event = log_event
 
 
 @router.get("/health")
@@ -43,12 +53,66 @@ def health():
     return {"status": "ok"}
 
 
+@router.get("/inventory")
+def list_inventory(session: Session = Depends(get_session)):
+    _ensure_db()
+    rows = session.query(InventoryItemModel).all()
+    return [
+        {
+            "sku": r.sku,
+            "name": r.name,
+            "vendor_id": r.vendor_id,
+            "stock_level": r.stock_level,
+            "safety_stock": r.safety_stock,
+            "unit_price": r.unit_price,
+            "reorder_point": r.reorder_point,
+            "avg_daily_usage": r.avg_daily_usage,
+        }
+        for r in rows
+    ]
+
+
+@router.get("/events")
+def list_events(session: Session = Depends(get_session)):
+    _ensure_db()
+    rows = (
+        session.query(POEventModel, PurchaseOrderModel.po_no)
+        .join(PurchaseOrderModel, POEventModel.po_id == PurchaseOrderModel.id)
+        .order_by(POEventModel.id.desc())
+        .limit(200)
+        .all()
+    )
+    return [
+        {
+            "id": ev.id,
+            "po_no": po_no,
+            "timestamp": ev.created_at.isoformat() if ev.created_at else None,
+            "node": ev.node,
+            "actor": ev.actor,
+            "note": ev.note,
+        }
+        for ev, po_no in rows
+    ]
+
+
 @router.post("/scan")
 async def scan(request: Request):
     _ensure_db()
     deps: GraphDeps = _get_deps(request)
+    _ensure_deps_logging(deps)
     out = await run_scan(deps)
-    return {"thread_id": out["thread_id"], "po_no": out["po"].po_no if out["po"] else None}
+    po = out["po"]
+    if po is None:
+        log_event("", "detector", "Tidak ada stok kritis — scan selesai tanpa PO.")
+    else:
+        log_event(po.po_no, "detector", f"Stok kritis terdeteksi: {po.sku}")
+        log_event(po.po_no, "vendor_rag", f"Aturan vendor {po.vendor_id} dimuat.")
+        log_event(po.po_no, "reorder_calc", out["result"].get("reorder").explanation if out["result"].get("reorder") else "Kalkulasi reorder selesai.")
+        if po.status == "pending_approval":
+            log_event(po.po_no, "po_builder", "PO dibangun dan menunggu persetujuan manusia.")
+        else:
+            log_event(po.po_no, "erp_submit", f"PO dikirim ke ERP: {out['result'].get('erp_po_no')}")
+    return {"thread_id": out["thread_id"], "po_no": po.po_no if po else None}
 
 
 @router.get("/pos")
@@ -68,11 +132,14 @@ def get_po(po_no: str, session: Session = Depends(get_session)):
 
 
 @router.post("/pos/{po_no}/approve")
-async def approve_po(po_no: str, request: Request):
+async def approve_po(po_no: str, body: ApproveBody | None = None, request: Request = None):
     _ensure_db()
     deps: GraphDeps = _get_deps(request)
+    _ensure_deps_logging(deps)
+    body = body or ApproveBody()
     thread_id = _thread_id_for(po_no)
-    await resume_approval(deps, thread_id, ApprovalDecision(decision="approved", reviewer="manager"))
+    await resume_approval(deps, thread_id, ApprovalDecision(decision="approved", reviewer=body.reviewer, note=body.note))
+    log_event(po_no, "human_governance", f"Disetujui oleh {body.reviewer}: {body.note}")
     return {"status": "approved"}
 
 
@@ -80,8 +147,10 @@ async def approve_po(po_no: str, request: Request):
 async def reject_po(po_no: str, body: RejectBody, request: Request):
     _ensure_db()
     deps: GraphDeps = _get_deps(request)
+    _ensure_deps_logging(deps)
     thread_id = _thread_id_for(po_no)
     await resume_approval(deps, thread_id, ApprovalDecision(decision="rejected", reviewer="manager", note=body.note))
+    log_event(po_no, "human_governance", f"Ditolak: {body.note}")
     return {"status": "rejected"}
 
 

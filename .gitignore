@@ -28,3 +28,11 @@ coverage/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Output alat bantu QA (Playwright MCP)
+.playwright-mcp/
+
+# Dokumen kerja agen — lokal saja, tidak untuk dipublikasikan
+docs/superpowers/
+docs/research/
+docs/agents/

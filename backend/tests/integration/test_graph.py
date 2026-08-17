@@ -50,7 +50,7 @@ async def test_scan_auto_submits_below_threshold():
         retriever=FakeRetriever(),
         extract=fake_extract,
     )
-    # unit_price=100, qty=max(100, ceil(7*20-50))=100 -> total=10000 >= ambang -> jalur persetujuan
+    # unit_price=500000, qty=max(100, ceil(7*20-50))=100 -> total=50jt >= ambang 50jt -> jalur persetujuan
     # Turunkan harga agar < ambang (threshold)
     deps.gateway = FakeGateway([make_item(unit_price=1.0)])
     out = await run_scan(deps)
@@ -81,7 +81,7 @@ async def test_scan_no_critical_stock_returns_without_error():
 @pytest.mark.asyncio
 async def test_scan_interrupts_for_approval_then_resumes():
     deps = GraphDeps(
-        gateway=FakeGateway([make_item(unit_price=100.0)]),  # total = 100*100 = 10000 >= ambang
+        gateway=FakeGateway([make_item(unit_price=500_000.0)]),  # total = 100*500000 = 50jt >= ambang 50jt
         retriever=FakeRetriever(),
         extract=fake_extract,
     )

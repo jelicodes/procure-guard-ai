@@ -8,7 +8,7 @@ def test_settings_defaults():
     from app.core.config import Settings
 
     clean = Settings(_env_file=None)
-    assert clean.approval_threshold == 10000.0
+    assert clean.approval_threshold == 50_000_000.0
     assert clean.database_url.startswith("sqlite")
 
 

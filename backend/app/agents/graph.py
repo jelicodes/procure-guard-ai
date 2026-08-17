@@ -73,7 +73,7 @@ def _config(thread_id: str) -> dict:
     return {"configurable": {"thread_id": thread_id}}
 
 
-def _log_event(po_no: str, node: str, note: str = "") -> None:
+def log_event(po_no: str, node: str, note: str = "") -> None:
     Base.metadata.create_all(engine)
     with SessionLocal() as session:
         po = session.query(PurchaseOrderModel).filter_by(po_no=po_no).first()

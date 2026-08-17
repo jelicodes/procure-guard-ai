@@ -1,17 +1,34 @@
-# Agent Skills
+# Procure Guard AI — Panduan Pengembangan
 
-This file configures how the engineering skills (triage, to-spec, to-tickets, wayfinder, domain-modeling, etc.) interact with this repo. See the files under `docs/agents/` for details.
+## Arsitektur
 
-## Agent skills
+- `backend/` — FastAPI + LangGraph (detector → vendor_rag → reorder_calc → po_builder → approver/erp_submit) + SQLAlchemy + SQLite (dev).
+- `frontend/` — React SPA (Vite, TypeScript, Tailwind CSS v4). Dashboard inventori, observability agen, dan approval PO. Proksi `/api` → backend.
+- `mcp_server/` — server MCP mock Oracle ERP (FastMCP, streamable-http).
+- `docker-compose.yml` — postgres (pgvector), mcp-server, backend, frontend.
 
-### Issue tracker
+## Menjalankan
 
-Issues and specs are tracked as GitHub issues via the `gh` CLI. See `docs/agents/issue-tracker.md`.
+```bash
+# Backend (dari backend/)
+.venv\Scripts\python -m app                       # http://localhost:8000
 
-### Triage labels
+# Frontend (dari frontend/)
+npm run dev                                       # http://localhost:5173, proxy /api → :8000
 
-The five canonical triage labels (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`) map 1:1 to GitHub labels with the same names. See `docs/agents/triage-labels.md`.
+# MCP ERP (dari root, sebelum backend bila ERP live dipakai)
+backend\.venv\Scripts\python -m mcp_server.erp_mcp # http://localhost:8001/mcp
+```
 
-### Domain docs
+## Verifikasi
 
-Single-context repo: one `CONTEXT.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+```bash
+# Backend
+cd backend && .venv\Scripts\python -m pytest
+
+# Frontend
+cd frontend && npm test
+npm run build
+```
+
+Catatan: seluruh tes berjalan tanpa Docker maupun panggilan LLM/ERP live.

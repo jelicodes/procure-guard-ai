@@ -16,7 +16,7 @@ class FakeGateway(InventoryGateway):
         self._items = [
             InventoryItem(
                 sku="SKU-001", name="Bearing", vendor_id="VENDOR-A", stock_level=50,
-                safety_stock=100, unit_price=100.0, reorder_point=120, avg_daily_usage=20.0,
+                safety_stock=100, unit_price=500_000.0, reorder_point=120, avg_daily_usage=20.0,
             )
         ]
 
