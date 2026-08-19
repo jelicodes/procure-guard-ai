@@ -19,7 +19,7 @@ def test_get_chat_model_mengembalikan_chatgroq(api_keys):
 
     model = get_chat_model()
     assert isinstance(model, ChatGroq)
-    assert model.model == "llama-3.1-8b-instant"
+    assert model.model == "openai/gpt-oss-120b"
     assert model.max_retries == 2
     assert hasattr(model, "with_structured_output")
 
