@@ -13,12 +13,15 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
 from langchain_core.embeddings import DeterministicFakeEmbedding
 from langchain_core.vectorstores import InMemoryVectorStore
 
+from app.core.config import settings
 from app.rag.retriever import VendorRetriever
+from app.rag.store import build_vector_store
 
 DEFAULT_GOLDEN = Path(__file__).resolve().parents[2] / "data" / "golden" / "retrieval-golden.json"
 DEFAULT_CORPUS = Path(__file__).resolve().parents[2] / "data" / "vendor_sops"
@@ -123,12 +126,35 @@ def summarize(results: list[dict]) -> dict:
     }
 
 
-def build_retriever(corpus_dir: Path, embeddings=None):
+def build_retriever(corpus_dir: Path, embeddings=None, store_backend: str = "inmemory"):
+    """Bangun retriever dari korpus.
+
+    store_backend:
+      - "inmemory" (default): store sementara, aman untuk CI/offline.
+      - "pgvector": store produksi (butuh DATABASE_URL postgres + Docker).
+        Meniru pola ingest idempoten: delete-by-doc_id lalu add, agar re-run
+        evaluasi tidak menduplikasi chunk.
+    """
     from app.rag.loader import load_documents
 
     docs = load_documents(str(corpus_dir))
     if embeddings is None:
         embeddings = DeterministicFakeEmbedding(size=8)
+    if store_backend == "pgvector":
+        if not settings.database_url.startswith("postgres"):
+            sys.exit(
+                "store_backend='pgvector' membutuhkan DATABASE_URL postgres. "
+                "Jalankan 'docker compose up -d postgres' lalu set DATABASE_URL "
+                "di backend/.env (contoh: postgresql+psycopg://procure:procure@localhost:5432/procure)."
+            )
+        store = build_vector_store(embeddings)
+        ids = [doc.id for doc in docs if doc.id]
+        try:
+            store.delete(ids=ids)
+        except Exception:
+            pass  # store kosong pada run pertama — delete-by-id tidak masalah
+        store.add_documents(docs)
+        return VendorRetriever(store)
     store = InMemoryVectorStore(embeddings)
     store.add_documents(docs)
     return VendorRetriever(store)
@@ -188,6 +214,12 @@ def main() -> None:
     parser.add_argument("--golden", type=Path, default=DEFAULT_GOLDEN)
     parser.add_argument("--k", type=int, default=8)
     parser.add_argument("--mode", choices=["deterministic", "llm"], default="deterministic")
+    parser.add_argument(
+        "--store",
+        choices=["inmemory", "pgvector"],
+        default="inmemory",
+        help="Backend vector store untuk evaluasi (pgvector butuh Docker + DATABASE_URL postgres)",
+    )
     args = parser.parse_args()
 
     embeddings = None
@@ -196,7 +228,7 @@ def main() -> None:
 
         embeddings = get_embeddings()
 
-    retriever = build_retriever(args.corpus, embeddings=embeddings)
+    retriever = build_retriever(args.corpus, embeddings=embeddings, store_backend=args.store)
     report = run_evaluation(args.corpus, args.golden, k=args.k, retriever=retriever)
     if args.mode == "llm":
         import asyncio
