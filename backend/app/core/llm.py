@@ -18,6 +18,6 @@ def get_chat_model() -> ChatGroq:
 
 def get_embeddings() -> GoogleGenerativeAIEmbeddings:
     return GoogleGenerativeAIEmbeddings(
-        model="gemini-embedding-001",
+        model="models/gemini-embedding-2",
         api_key=settings.google_api_key,
     )

@@ -37,4 +37,4 @@ def test_get_embeddings_mengembalikan_embeddings(api_keys):
 
     embeddings = get_embeddings()
     assert isinstance(embeddings, GoogleGenerativeAIEmbeddings)
-    assert embeddings.model == "gemini-embedding-001"
+    assert embeddings.model == "models/gemini-embedding-2"
