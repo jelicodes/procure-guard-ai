@@ -178,3 +178,20 @@ def test_run_evaluation_end_to_end_deterministik(tmp_path):
     assert isinstance(Path(golden), Path)  # noqa: B015
     assert report["summary"]["examples"] == 1
     assert retriever is not None
+
+
+def test_regression_gate_korpus_riil_golden_10():
+    """Regression gate: korpus produksi vs golden set 10 contoh harus tetap di atas ambang."""
+    from app.rag.evaluate import DEFAULT_CORPUS, DEFAULT_GOLDEN
+
+    report = run_evaluation(
+        DEFAULT_CORPUS, DEFAULT_GOLDEN, k=8, embeddings=DeterministicFakeEmbedding(size=8)
+    )
+    s = report["summary"]
+    assert s["examples"] == 10
+    assert s["hit_rate_at_k"] == 1.0
+    assert s["recall_at_k"] >= 0.80
+    assert s["leakage_examples"] == 0
+    assert s["fact_moq"] == 1.0
+    assert s["fact_lead"] == 1.0
+    assert s["fact_tiers"] >= 0.90
