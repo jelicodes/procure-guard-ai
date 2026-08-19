@@ -1,6 +1,8 @@
 """Tes deterministik evaluator retrieval RAG (tanpa API nyata)."""
 from pathlib import Path
 
+import pytest
+
 from langchain_core.documents import Document
 from langchain_core.embeddings import DeterministicFakeEmbedding
 from langchain_core.vectorstores import InMemoryVectorStore
@@ -195,3 +197,99 @@ def test_regression_gate_korpus_riil_golden_10():
     assert s["fact_moq"] == 1.0
     assert s["fact_lead"] == 1.0
     assert s["fact_tiers"] >= 0.90
+
+
+def test_build_retriever_pgvector_memakai_factory_dan_ingest_idempoten(tmp_path, monkeypatch):
+    """store_backend='pgvector' harus lewat factory build_vector_store + pola ingest idempoten."""
+    import app.rag.evaluate as evaluate_mod
+    from langchain_core.vectorstores import InMemoryVectorStore
+
+    corpus = tmp_path / "sops"
+    corpus.mkdir()
+    (corpus / "vendor-a.md").write_text(
+        "MOQ 100 unit. Lead time 7 hari. Vendor A.", encoding="utf-8"
+    )
+
+    calls: list[tuple[str, int, str]] = []
+    real_store = InMemoryVectorStore(DeterministicFakeEmbedding(size=8))
+
+    def fake_factory(embeddings, collection_name="vendor_documents"):
+        calls.append(("factory", len(embeddings.embed_query("x")), collection_name))
+        return real_store
+
+    monkeypatch.setattr(evaluate_mod, "build_vector_store", fake_factory)
+    monkeypatch.setattr(
+        evaluate_mod.settings, "database_url", "postgresql+psycopg://procure:procure@localhost:5432/procure"
+    )
+
+    retriever = evaluate_mod.build_retriever(
+        corpus, embeddings=DeterministicFakeEmbedding(size=8), store_backend="pgvector"
+    )
+
+    assert calls, "factory PGVector harus dipanggil"
+    assert calls[0][1] == 8
+    assert calls[0][2] == "vendor_documents_eval", "evaluasi harus memakai collection terpisah dari produksi"
+    assert len(real_store.store) == 1
+    assert isinstance(retriever, VendorRetriever)
+
+
+def test_build_retriever_pgvector_menolak_database_url_non_postgres(tmp_path, monkeypatch):
+    """store_backend='pgvector' tanpa DATABASE_URL postgres harus ditolak eksplisit."""
+    import app.rag.evaluate as evaluate_mod
+
+    monkeypatch.setattr(evaluate_mod.settings, "database_url", "sqlite:///./x.db")
+    monkeypatch.setattr(evaluate_mod, "build_vector_store", lambda e: (_ for _ in ()).throw(AssertionError()))
+
+    with pytest.raises(SystemExit):
+        evaluate_mod.build_retriever(
+            tmp_path, embeddings=DeterministicFakeEmbedding(size=8), store_backend="pgvector"
+        )
+
+
+def test_retriever_pgvector_filter_vendor_berupa_dict(tmp_path, monkeypatch):
+    """VendorRetriever atas store non-InMemory harus memakai filter dict (pola PGVector)."""
+    import app.rag.evaluate as evaluate_mod
+
+    corpus = tmp_path / "sops"
+    corpus.mkdir()
+    (corpus / "vendor-a.md").write_text(
+        "MOQ 100 unit. Lead time 7 hari. Vendor A.", encoding="utf-8"
+    )
+    (corpus / "vendor-b.md").write_text(
+        "MOQ 250 unit. Lead time 10 hari. Vendor B.", encoding="utf-8"
+    )
+
+    class FakePgStore:
+        """Meniru kontrak PGVector: similarity_search menerima filter dict metadata."""
+
+        def __init__(self, inner):
+            self._inner = inner
+
+        def delete(self, ids=None):
+            return self._inner.delete(ids=ids)
+
+        def add_documents(self, docs):
+            return self._inner.add_documents(docs)
+
+        def similarity_search(self, query, k=4, filter=None):
+            docs = self._inner.similarity_search(query, k=100)
+            if isinstance(filter, dict):
+                key, value = next(iter(filter.items()))
+                docs = [d for d in docs if d.metadata.get(key) == value]
+            return docs[:k]
+
+    real_store = InMemoryVectorStore(DeterministicFakeEmbedding(size=8))
+    fake_store = FakePgStore(real_store)
+    monkeypatch.setattr(evaluate_mod, "build_vector_store", lambda e, collection_name="vendor_documents": fake_store)
+    monkeypatch.setattr(
+        evaluate_mod.settings, "database_url", "postgresql+psycopg://procure:procure@localhost:5432/procure"
+    )
+
+    retriever = evaluate_mod.build_retriever(
+        corpus, embeddings=DeterministicFakeEmbedding(size=8), store_backend="pgvector"
+    )
+    assert retriever._build_filter("VENDOR-A") == {"filter": {"vendor_id": "VENDOR-A"}}
+
+    docs = retriever.retrieve("VENDOR-A", "SKU-001", k=4)
+    assert docs
+    assert all(d.metadata["vendor_id"] == "VENDOR-A" for d in docs)

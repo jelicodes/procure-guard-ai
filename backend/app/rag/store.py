@@ -8,11 +8,11 @@ from langchain_postgres import PGVector
 from app.core.config import settings
 
 
-def build_vector_store(embeddings: Embeddings):
+def build_vector_store(embeddings: Embeddings, collection_name: str = "vendor_documents"):
     if settings.database_url.startswith("postgres"):
         return PGVector(
             embeddings=embeddings,
             connection=settings.database_url,
-            collection_name="vendor_documents",
+            collection_name=collection_name,
         )
     return InMemoryVectorStore(embeddings)
