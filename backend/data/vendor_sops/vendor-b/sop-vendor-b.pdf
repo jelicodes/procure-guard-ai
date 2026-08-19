@@ -1,0 +1,60 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 1709 >>
+stream
+BT /F1 11 Tf 56 740 Td (SOP Vendor B - PT Sejahtera Part) Tj ET
+BT /F1 11 Tf 56 722 Td (Perjanjian Penyediaan Piston Seal dan Hydraulic Valve) Tj ET
+BT /F1 11 Tf 56 704 Td () Tj ET
+BT /F1 11 Tf 56 686 Td (1. Definisi) Tj ET
+BT /F1 11 Tf 56 668 Td (Lead Time: minimum waktu antara penerimaan PO dan delivery date.) Tj ET
+BT /F1 11 Tf 56 650 Td (Diskon: pengurangan harga sesuai Pasal 4.) Tj ET
+BT /F1 11 Tf 56 632 Td (Forecast: perkiraan kebutuhan pembeli untuk 90 hari ke depan.) Tj ET
+BT /F1 11 Tf 56 614 Td () Tj ET
+BT /F1 11 Tf 56 596 Td (2. Minimum Order Quantity \(MOQ\)) Tj ET
+BT /F1 11 Tf 56 578 Td (MOQ umum: 250 unit per SKU.) Tj ET
+BT /F1 11 Tf 56 560 Td (SKU-002 \(Piston Seal 30mm\): MOQ 250 unit.) Tj ET
+BT /F1 11 Tf 56 542 Td (SKU-004 \(Hydraulic Valve DN25\): MOQ 100 unit.) Tj ET
+BT /F1 11 Tf 56 524 Td () Tj ET
+BT /F1 11 Tf 56 506 Td (3. Lead Time) Tj ET
+BT /F1 11 Tf 56 488 Td (Standar: 10 hari kerja.) Tj ET
+BT /F1 11 Tf 56 470 Td (SKU-004: 20 hari kerja \(item impor\).) Tj ET
+BT /F1 11 Tf 56 452 Td () Tj ET
+BT /F1 11 Tf 56 434 Td (4. Diskon Volume) Tj ET
+BT /F1 11 Tf 56 416 Td (Pembelian >= 1000 unit: diskon 3%.) Tj ET
+BT /F1 11 Tf 56 398 Td (Pembelian >= 2500 unit: diskon 5%.) Tj ET
+BT /F1 11 Tf 56 380 Td () Tj ET
+BT /F1 11 Tf 56 362 Td (5. Klausul Penalti) Tj ET
+BT /F1 11 Tf 56 344 Td (Pengembalian barang cacat maksimal 7 hari setelah penerimaan.) Tj ET
+BT /F1 11 Tf 56 326 Td (Keterlambatan pengiriman > 5 hari: penalti 1.5% per hari.) Tj ET
+BT /F1 11 Tf 56 308 Td () Tj ET
+BT /F1 11 Tf 56 290 Td (6. Ketentuan Khusus) Tj ET
+BT /F1 11 Tf 56 272 Td (SKU-002: toleransi retur 2%.) Tj ET
+BT /F1 11 Tf 56 254 Td (SKU-004: penyesuaian harga otomatis pada pembelian kuartalan.) Tj ET
+
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000002002 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+2072
+%%EOF

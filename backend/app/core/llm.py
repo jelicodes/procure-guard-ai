@@ -9,7 +9,7 @@ from app.core.config import settings
 
 def get_chat_model() -> ChatGroq:
     return ChatGroq(
-        model="llama-3.1-8b-instant",
+        model="openai/gpt-oss-120b",
         temperature=0.0,
         max_retries=2,
         api_key=settings.groq_api_key,
