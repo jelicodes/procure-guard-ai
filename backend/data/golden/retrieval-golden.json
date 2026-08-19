@@ -124,5 +124,123 @@
       }
     },
     "metadata": {"vendor_id": "VENDOR-C", "sku": "SKU-005"}
+  },
+  {
+    "inputs": {
+      "query": "Diskon volume untuk Bearing 6204 dari VENDOR-A?",
+      "vendor_id": "VENDOR-A",
+      "sku": "SKU-001"
+    },
+    "reference_outputs": {
+      "relevant_doc_ids": [
+        "vendor-a/sop-vendor-a.md:Perjanjian Penyediaan Barang — VENDOR-A (PT Industri Jaya) > 4. Diskon Volume"
+      ],
+      "expected_vendor_rules": {
+        "moq": 100,
+        "lead_time_days": 7,
+        "discount_tiers": [
+          {"min_qty": 500, "discount_pct": 5},
+          {"min_qty": 1000, "discount_pct": 8},
+          {"min_qty": 2000, "discount_pct": 10}
+        ],
+        "sources": ["vendor-a/sop-vendor-a.md"]
+      }
+    },
+    "metadata": {"vendor_id": "VENDOR-A", "sku": "SKU-001"}
+  },
+  {
+    "inputs": {
+      "query": "Berapa lead time pengiriman Belt Conveyor 1200mm dari VENDOR-C?",
+      "vendor_id": "VENDOR-C",
+      "sku": "SKU-005"
+    },
+    "reference_outputs": {
+      "relevant_doc_ids": [
+        "vendor-c/sop-vendor-c.md:Perjanjian Penyediaan Barang — VENDOR-C (PT Mitra Komponen Nusantara) > 3. Lead Time Pengiriman",
+        "vendor-c/sop-vendor-c.md:Perjanjian Penyediaan Barang — VENDOR-C (PT Mitra Komponen Nusantara) > 6. Ketentuan Khusus per SKU"
+      ],
+      "expected_vendor_rules": {
+        "moq": 20,
+        "lead_time_days": 30,
+        "discount_tiers": [
+          {"min_qty": 1500, "discount_pct": 4},
+          {"min_qty": 3000, "discount_pct": 6}
+        ],
+        "sources": ["vendor-c/sop-vendor-c.md"]
+      }
+    },
+    "metadata": {"vendor_id": "VENDOR-C", "sku": "SKU-005"}
+  },
+  {
+    "inputs": {
+      "query": "Klausul penalti keterlambatan dan ketentuan retur Piston Seal 30mm VENDOR-B",
+      "vendor_id": "VENDOR-B",
+      "sku": "SKU-002"
+    },
+    "reference_outputs": {
+      "relevant_doc_ids": [
+        "vendor-b/sop-vendor-b.md:Perjanjian Penyediaan Barang — VENDOR-B (PT Sejahtera Part) > 5. Klausul Penalti",
+        "vendor-b/sop-vendor-b.md:Perjanjian Penyediaan Barang — VENDOR-B (PT Sejahtera Part) > 6. Ketentuan Khusus per SKU",
+        "vendor-b/sop-vendor-b.pdf:0"
+      ],
+      "expected_vendor_rules": {
+        "moq": 250,
+        "lead_time_days": 10,
+        "discount_tiers": [
+          {"min_qty": 1000, "discount_pct": 3},
+          {"min_qty": 2500, "discount_pct": 5},
+          {"min_qty": 5000, "discount_pct": 7}
+        ],
+        "sources": ["vendor-b/sop-vendor-b.md", "vendor-b/sop-vendor-b.pdf"]
+      }
+    },
+    "metadata": {"vendor_id": "VENDOR-B", "sku": "SKU-002"}
+  },
+  {
+    "inputs": {
+      "query": "Syarat khusus sebelum release pengiriman Servo Motor 750W dari VENDOR-A",
+      "vendor_id": "VENDOR-A",
+      "sku": "SKU-003"
+    },
+    "reference_outputs": {
+      "relevant_doc_ids": [
+        "vendor-a/sop-vendor-a.md:Perjanjian Penyediaan Barang — VENDOR-A (PT Industri Jaya) > 2. Minimum Order Quantity (MOQ)",
+        "vendor-a/sop-vendor-a.md:Perjanjian Penyediaan Barang — VENDOR-A (PT Industri Jaya) > 6. Ketentuan Khusus per SKU"
+      ],
+      "expected_vendor_rules": {
+        "moq": 5,
+        "lead_time_days": 14,
+        "discount_tiers": [
+          {"min_qty": 500, "discount_pct": 5},
+          {"min_qty": 1000, "discount_pct": 8},
+          {"min_qty": 2000, "discount_pct": 10}
+        ],
+        "sources": ["vendor-a/sop-vendor-a.md"]
+      }
+    },
+    "metadata": {"vendor_id": "VENDOR-A", "sku": "SKU-003"}
+  },
+  {
+    "inputs": {
+      "query": "Apakah pembelian Belt Conveyor 1200mm harus mengikuti peraturan pengadaan barang pemerintah?",
+      "vendor_id": "VENDOR-C",
+      "sku": "SKU-005"
+    },
+    "reference_outputs": {
+      "relevant_doc_ids": [
+        "vendor-c/sop-vendor-c.md:Perjanjian Penyediaan Barang — VENDOR-C (PT Mitra Komponen Nusantara) > 2. Minimum Order Quantity (MOQ)",
+        "vendor-c/sop-vendor-c.md:Perjanjian Penyediaan Barang — VENDOR-C (PT Mitra Komponen Nusantara) > 6. Ketentuan Khusus per SKU"
+      ],
+      "expected_vendor_rules": {
+        "moq": 20,
+        "lead_time_days": 30,
+        "discount_tiers": [
+          {"min_qty": 1500, "discount_pct": 4},
+          {"min_qty": 3000, "discount_pct": 6}
+        ],
+        "sources": ["vendor-c/sop-vendor-c.md"]
+      }
+    },
+    "metadata": {"vendor_id": "VENDOR-C", "sku": "SKU-005"}
   }
 ]
