@@ -147,7 +147,10 @@ def build_retriever(corpus_dir: Path, embeddings=None, store_backend: str = "inm
                 "Jalankan 'docker compose up -d postgres' lalu set DATABASE_URL "
                 "di backend/.env (contoh: postgresql+psycopg://procure:procure@localhost:5432/procure)."
             )
-        store = build_vector_store(embeddings)
+        # Collection terpisah dari produksi ("vendor_documents") agar evaluasi
+        # tidak menimpa data yang dipakai pipeline live (mis. embedding 8-d
+        # DeterministicFakeEmbedding tidak boleh menumpuk di collection produksi).
+        store = build_vector_store(embeddings, collection_name="vendor_documents_eval")
         ids = [doc.id for doc in docs if doc.id]
         try:
             store.delete(ids=ids)

@@ -210,11 +210,11 @@ def test_build_retriever_pgvector_memakai_factory_dan_ingest_idempoten(tmp_path,
         "MOQ 100 unit. Lead time 7 hari. Vendor A.", encoding="utf-8"
     )
 
-    calls: list[tuple[str, int]] = []
+    calls: list[tuple[str, int, str]] = []
     real_store = InMemoryVectorStore(DeterministicFakeEmbedding(size=8))
 
-    def fake_factory(embeddings):
-        calls.append(("factory", len(embeddings.embed_query("x"))))
+    def fake_factory(embeddings, collection_name="vendor_documents"):
+        calls.append(("factory", len(embeddings.embed_query("x")), collection_name))
         return real_store
 
     monkeypatch.setattr(evaluate_mod, "build_vector_store", fake_factory)
@@ -227,6 +227,8 @@ def test_build_retriever_pgvector_memakai_factory_dan_ingest_idempoten(tmp_path,
     )
 
     assert calls, "factory PGVector harus dipanggil"
+    assert calls[0][1] == 8
+    assert calls[0][2] == "vendor_documents_eval", "evaluasi harus memakai collection terpisah dari produksi"
     assert len(real_store.store) == 1
     assert isinstance(retriever, VendorRetriever)
 
@@ -278,7 +280,7 @@ def test_retriever_pgvector_filter_vendor_berupa_dict(tmp_path, monkeypatch):
 
     real_store = InMemoryVectorStore(DeterministicFakeEmbedding(size=8))
     fake_store = FakePgStore(real_store)
-    monkeypatch.setattr(evaluate_mod, "build_vector_store", lambda e: fake_store)
+    monkeypatch.setattr(evaluate_mod, "build_vector_store", lambda e, collection_name="vendor_documents": fake_store)
     monkeypatch.setattr(
         evaluate_mod.settings, "database_url", "postgresql+psycopg://procure:procure@localhost:5432/procure"
     )
