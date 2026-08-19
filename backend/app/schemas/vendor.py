@@ -20,3 +20,18 @@ class VendorRules(BaseModel):
     penalty_clauses: list[PenaltyClause] = Field(default_factory=list)
     min_order_value: float = 0.0
     basis: str = "rag"
+    sources: list[str] = Field(default_factory=list)
+
+
+class VendorRulesExtract(BaseModel):
+    """Skema untuk tool LLM — tanpa field `sources` yang di-set deterministik di Python.
+    Memakai ini mencegah Groq menolak tool call saat LLM mengisi field opsional dengan null."""
+
+    vendor_id: str
+    sku: str | None = None
+    moq: int = 0
+    lead_time_days: int = 7
+    discount_tiers: list[DiscountTier] = Field(default_factory=list)
+    penalty_clauses: list[PenaltyClause] = Field(default_factory=list)
+    min_order_value: float = 0.0
+    basis: str = "rag"
