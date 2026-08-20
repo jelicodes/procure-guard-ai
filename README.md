@@ -14,6 +14,7 @@ Automates the critical procurement pipeline end-to-end, cutting purchase order c
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL%2Bpgvector-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+![CI](https://github.com/jelicodes/procure-guard-ai/actions/workflows/ci.yml/badge.svg)
 
 </div>
 
