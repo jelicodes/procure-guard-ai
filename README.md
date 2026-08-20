@@ -147,8 +147,8 @@ for domain vocabulary and architectural decisions.
 | Layer | Choice | Notes |
 |---|---|---|
 | Orchestration | **LangGraph** (`StateGraph` + checkpointer) | State machine, `interrupt()`/resume for human-in-the-loop |
-| LLM / reasoning | **Groq** `ChatGroq` (`llama-3.1-8b-instant`) | Structured output for `VendorRules` extraction |
-| Embeddings | **Google Gemini** `gemini-embedding-001` | Document vectors for RAG |
+| LLM / reasoning | **Groq** `ChatGroq` (`openai/gpt-oss-120b`) | Structured output for `VendorRules` extraction |
+| Embeddings | **Google Gemini** `gemini-embedding-2` (3072-d) | Document vectors for RAG |
 | MCP server | **FastMCP** (`streamable-http` / `stdio`) | Mock Oracle ERP as MCP tools |
 | MCP client | **LangChain MCP Adapters** (`MultiServerMCPClient`) | ERP tools consumed inside the graph |
 | API | **FastAPI** + Uvicorn | Async, Pydantic-native |
@@ -262,7 +262,7 @@ docker compose up --build
 ## Testing
 
 ```bash
-# Backend — 43 tests (unit, integration, API)
+# Backend — 70 tests (unit, integration, API, RAG evaluation)
 cd backend && .\.venv\Scripts\python -m pytest
 
 # Frontend — 3 tests
@@ -271,6 +271,26 @@ cd frontend && npm test
 
 The backend test suite runs **entirely without Docker or live LLM/ERP calls** —
 infrastructure is injected and the MCP server is exercised over stdio.
+
+### RAG evaluation
+
+Supplier-rule retrieval is validated against a 10-example golden set with a
+regression gate that runs in CI (offline, deterministic embeddings). On the
+production stack (PGVector + Gemini embeddings, live LLM):
+
+| Metric | Result |
+|---|---|
+| hit-rate@k | 1.00 |
+| recall@k | 1.00 |
+| correctness (MOQ / lead time / discount tiers) | 10/10/10 |
+| cross-vendor leakage | 0 |
+
+Run the full evaluation against a live store with:
+
+```bash
+cd backend
+.venv\Scripts\python -m app.rag.evaluate --mode llm --store pgvector
+```
 
 ---
 
